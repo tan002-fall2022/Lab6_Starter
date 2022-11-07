@@ -62,7 +62,7 @@ function saveRecipesToStorage(recipes) {
   // B1. TODO - Complete the functionality as described in this function
   //            header. It is possible in only a single line, but should
   //            be no more than a few lines.
-  localStorage.setItem('recipes', recipes.toString());
+  localStorage.setItem('recipes', JSON.stringify(recipes));
 }
 
 /**
@@ -80,20 +80,21 @@ function initFormHandler() {
     // Steps B4-B9 will occur inside the event listener from step B3
 
     // B4. TODO - Create a new FormData object from the <form> element reference above
-    let FormData = formRef.data;
+    let formData = new FormData(formRef);
 
     // B5. TODO - Create an empty object (I'll refer to this object as recipeObject to
     //            make this easier to read), and then extract the keys and corresponding
     //            values from the FormData object and insert them into recipeObject
-    let recipeObject;
-    console.log(formRef);
-    recipeObject = FormData;
-    
+    let recipeObject = {};
+    for (const key of formData.keys()) {
+      recipeObject[key] = formData.get(key);
+    }
+  
     // B6. TODO - Create a new <recipe-card> element
     let recipeCard = document.createElement('recipe-card');
 
     // B7. TODO - Add the recipeObject data to <recipe-card> using element.data
-    recipeCard.data = FormData;
+    recipeCard.data = recipeObject;
 
     // B8. TODO - Append this new <recipe-card> to <main>
     document.querySelector('main').append(recipeCard);
@@ -101,11 +102,14 @@ function initFormHandler() {
     // B9. TODO - Get the recipes array from localStorage, add this new recipe to it, and
     //            then save the recipes array back to localStorage
     let recipes = getRecipesFromStorage();
-    recipes.push(FormData);
+    recipes.push(recipeObject);
     saveRecipesToStorage(recipes);
   });
 
   // B10. TODO - Get a reference to the "Clear Local Storage" button
+  // Note that .getElementsByClassName returns an ARRAY of reference
+  // To directly get the reference to the button, we have to get the 
+  // first index "0" of the array.
   let clearRef = document.getElementsByClassName('danger')[0];
 
   // B11. TODO - Add a click event listener to clear local storage button
@@ -115,6 +119,6 @@ function initFormHandler() {
     localStorage.clear();
 
     // B13. TODO - Delete the contents of <main>
-    document.getElementById('main').innerHTML = "";
+    document.querySelector('main').innerHTML = "";
   });
 }
