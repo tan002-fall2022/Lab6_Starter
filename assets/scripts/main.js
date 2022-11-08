@@ -27,7 +27,12 @@ function getRecipesFromStorage() {
   let recipesString = localStorage.getItem('recipes');
   let recipes = JSON.parse(recipesString);
 
-  return recipes;
+  if (recipes == null) {
+    return []; // return new empty array
+  }
+  else {
+    return recipes;
+  }
 }
 
 /**
@@ -45,11 +50,11 @@ function addRecipesToDocument(recipes) {
   //            create a <recipe-card> element for each one, and populate
   //            each <recipe-card> with that recipe data using element.data = ...
   //            Append each element to <main>
-  for (let i = 0; i < recipes.length; i++) { // []
-    let recipeCard = document.createElement('recipe-card');
-    recipeCard.data = recipes[i];
-    mainRef.append(recipeCard);
-  } 
+  for (let i = 0; i < recipes.length; i++) {
+      let recipeCard = document.createElement('recipe-card');
+      recipeCard.data = recipes[i];
+      mainRef.append(recipeCard);
+  }
 }
 
 /**
@@ -76,8 +81,11 @@ function initFormHandler() {
   
   // B3. TODO - Add an event listener for the 'submit' event, which fires when the
   //            submit button is clicked
-  document.querySelector('button').addEventListener('click', () => {
+  document.querySelector('button').addEventListener('click', (event) => {
     // Steps B4-B9 will occur inside the event listener from step B3
+    // Prevent the page from reloading itself every time we add a new recipe
+    // (which wipes the whole page for no reason)
+    event.preventDefault();
 
     // B4. TODO - Create a new FormData object from the <form> element reference above
     let formData = new FormData(formRef);
@@ -102,6 +110,8 @@ function initFormHandler() {
     // B9. TODO - Get the recipes array from localStorage, add this new recipe to it, and
     //            then save the recipes array back to localStorage
     let recipes = getRecipesFromStorage();
+
+    // Note that recipes can be an empty array
     recipes.push(recipeObject);
     saveRecipesToStorage(recipes);
   });
